@@ -22,7 +22,32 @@ blinds("lowered").
 */
 @start_plan
 +!start : td("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#Blinds", Url) <-
-    .print("Hello world").
+    .print("Hello world");
+    makeArtifact("blinds", "org.hyperagents.jacamo.artifacts.wot.ThingArtifact", [Url], ArtId).
+
+
+@raise_blinds_plan
++!raise_blinds : true <-
+    invokeAction("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#SetState", ["raised"]);
+    -+blinds("raised");
+    .print("Blinds raised");
+    .send(personal_assistant, tell, blinds("raised")).
+
+@lower_blinds_plan
++!lower_blinds : true <-
+    invokeAction("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#SetState", ["lowered"]);
+    -+blinds("lowered");
+    .print("Blinds lowered");
+    .send(personal_assistant, tell, blinds("lowered")).
+
++!increase_illuminance : true <-
+    if (blinds("lowered")) {
+        .print("Accepting increase illuminance proposal");
+        .send(personal_assistant, tell, propose("natural_light"));
+    } else {
+        .print("Refusing increase illuminance proposal");
+        .send(personal_assistant, tell, refuse("natural_light"));
+    }.
 
 /* Import behavior of agents that work in CArtAgO environments */
 { include("$jacamoJar/templates/common-cartago.asl") }

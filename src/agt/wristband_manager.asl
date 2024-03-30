@@ -53,7 +53,11 @@ owner_state(_).
 */
 @owner_state_plan
 +owner_state(State) : true <-
-    .print("The owner is ", State).
+    .print("The owner is ", State);
+    .send(personal_assistant, tell, owner_state(State)).
+
++!increase_illuminance : true <-
+    .print("Not relevant for wristband manager").
 
 /* Import behavior of agents that work in CArtAgO environments */
 { include("$jacamoJar/templates/common-cartago.asl") }

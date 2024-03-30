@@ -7,7 +7,7 @@
 td("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#CalendarService", "https://raw.githubusercontent.com/Interactions-HSG/example-tds/was/tds/calendar-service.ttl").
 
 /* Initial goals */ 
-
+upcoming_event(_).
 // The agent has the goal to start
 !start.
 
@@ -19,7 +19,25 @@ td("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#CalendarServic
 */
 @start_plan
 +!start : td("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#CalendarService", Url) <-
-    .print("Hello world").
+    .print("Hello world");
+    makeArtifact("calendar", "org.hyperagents.jacamo.artifacts.wot.ThingArtifact", [Url], ArtId);
+    !read_upcoming_event.
+    
+@read_upcoming_event_plan
++!read_upcoming_event : true <-
+    readProperty("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#ReadUpcomingEvent",  Event);
+    .nth(0,Event,EventLst);
+    -+upcoming_event(EventLst);
+    .wait(5000);
+    !read_upcoming_event.
+
+@upcoming_event_plan
++upcoming_event(Event) : true <-
+    .print("Upcoming event: ", Event);
+    .send(personal_assistant, tell, upcoming_event(Event)).
+
++!increase_illuminance : true <-
+    .print("Not relevant for calender manager").
 
 /* Import behavior of agents that work in CArtAgO environments */
 { include("$jacamoJar/templates/common-cartago.asl") }
